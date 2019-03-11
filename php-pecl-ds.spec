@@ -7,7 +7,7 @@
 Summary:	Data Structures
 Name:		%{php_name}-pecl-%{modname}
 Version:	1.2.8
-Release:	1
+Release:	2
 License:	MIT
 Group:		Development/Languages/PHP
 Source0:	https://pecl.php.net/get/%{modname}-%{version}.tgz
@@ -16,6 +16,7 @@ URL:		https://pecl.php.net/package/ds/
 BuildRequires:	%{php_name}-cli
 BuildRequires:	%{php_name}-devel >= 4:7.0
 BuildRequires:	%{php_name}-json
+BuildRequires:	%{php_name}-pcre
 BuildRequires:	%{php_name}-spl
 BuildRequires:	rpmbuild(macros) >= 1.666
 %if %{with tests}
@@ -38,7 +39,7 @@ cat <<'EOF' > run-tests.sh
 export NO_INTERACTION=1 REPORT_EXIT_STATUS=1 MALLOC_CHECK_=2
 exec %{__make} test \
 	PHP_EXECUTABLE=%{__php} \
-	PHP_TEST_SHARED_SYSTEM_EXTENSIONS="spl json" \
+	PHP_TEST_SHARED_SYSTEM_EXTENSIONS="pcre spl json" \
 	RUN_TESTS_SETTINGS="-q $*"
 EOF
 chmod +x run-tests.sh
@@ -51,6 +52,7 @@ phpize
 # simple module load test
 %{__php} -n -q \
 	-d extension_dir=modules \
+	-d extension=%{php_extensiondir}/pcre.so \
 	-d extension=%{php_extensiondir}/spl.so \
 	-d extension=%{php_extensiondir}/json.so \
 	-d extension=%{modname}.so \
