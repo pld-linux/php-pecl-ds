@@ -7,7 +7,7 @@
 Summary:	Data Structures
 Name:		%{php_name}-pecl-%{modname}
 Version:	1.2.8
-Release:	2
+Release:	3
 License:	MIT
 Group:		Development/Languages/PHP
 Source0:	https://pecl.php.net/get/%{modname}-%{version}.tgz
@@ -73,7 +73,7 @@ install -d $RPM_BUILD_ROOT{%{php_sysconfdir}/conf.d,%{php_extensiondir}}
 	INSTALL_ROOT=$RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{php_sysconfdir}/conf.d
-cat <<'EOF' > $RPM_BUILD_ROOT%{php_sysconfdir}/conf.d/%{modname}.ini
+cat <<'EOF' > $RPM_BUILD_ROOT%{php_sysconfdir}/conf.d/json_%{modname}.ini
 ; Enable %{modname} extension module
 extension=%{modname}.so
 EOF
@@ -92,5 +92,5 @@ fi
 %files
 %defattr(644,root,root,755)
 %doc LICENSE
-%config(noreplace) %verify(not md5 mtime size) %{php_sysconfdir}/conf.d/%{modname}.ini
+%config(noreplace) %verify(not md5 mtime size) %{php_sysconfdir}/conf.d/*%{modname}.ini
 %attr(755,root,root) %{php_extensiondir}/%{modname}.so
