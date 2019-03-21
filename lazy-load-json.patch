@@ -1,0 +1,85 @@
+Attempt to lazy init the json symbols because either RTLD_NOW or -Wl,-z,relro,-z,now
+
+- https://github.com/php-ds/ext-ds/issues/2
+- https://derickrethans.nl/undefined-symbol.html
+
+--- php71-pecl-ds-1.2.8.orig/php_ds.c	2019-01-25 03:05:33.000000000 +0200
++++ php71-pecl-ds-1.2.8.lazy/php_ds.c	2019-03-21 16:19:45.114036401 +0200
+@@ -30,6 +30,13 @@
+ {
+ 	ZEND_INIT_MODULE_GLOBALS(ds, php_ds_init_globals, NULL);
+ 
++	// Module dependencies
++	// https://github.com/php-ds/ext-ds/issues/2
++	// https://derickrethans.nl/undefined-symbol.html
++#if defined(COMPILE_DL_DS)
++    php_ds_resolve_symbols();
++#endif
++
+     // Interfaces
+     php_ds_register_hashable();
+     php_ds_register_collection();
+--- php71-pecl-ds-1.2.8.orig/src/common.c	2019-01-25 03:05:33.000000000 +0200
++++ php71-pecl-ds-1.2.8.lazy/src/common.c	2019-03-21 16:43:06.491400762 +0200
+@@ -1,5 +1,15 @@
+ #include "common.h"
+ 
++#undef php_json_serializable_ce
++/**
++ * Pointer to php_json_serializable_ce
++ */
++zend_class_entry *php_json_serializable_ce_p;
++/**
++ * Another extern declaration as php/ext/json/php_json.h imports php_json_serializable_ce_p
++ */
++extern PHP_JSON_API zend_class_entry *php_json_serializable_ce;
++
+ zval *ds_allocate_zval_buffer(zend_long length)
+ {
+     return ecalloc(length, sizeof(zval));
+@@ -250,3 +260,8 @@
+     zend_throw_exception(ce, str->val, 0);
+     zend_string_free(str);
+ }
++
++void php_ds_resolve_symbols()
++{
++	php_json_serializable_ce_p = php_json_serializable_ce;
++}
+--- php71-pecl-ds-1.2.8.orig/src/common.h	2019-01-25 03:05:33.000000000 +0200
++++ php71-pecl-ds-1.2.8.lazy/src/common.h	2019-03-21 16:44:54.620446603 +0200
+@@ -1,10 +1,24 @@
+ #ifndef DS_COMMON_H
+ #define DS_COMMON_H
+ 
++/*
++ * Rename php_json_serializable_ce symbol as php_json_serializable_ce_p.
++ *
++ * This library will use php_json_serializable_ce_p symbol all over the code
++ * and php_json_serializable_ce is external symbol which is connected in module init method
++ *
++ * This could be enabled only with COMPILE_DL_DS
++ * This needs to be done before loading ext/json/php_json.h
++ * But COMPILE_DL_DS comes from php.h
++ * ...so, do this unconditionally for now.
++ */
++#define php_json_serializable_ce php_json_serializable_ce_p
++
+ #include "php.h"
+ #include "zend_exceptions.h"
+ #include "ext/standard/php_var.h"
+ #include "ext/spl/spl_exceptions.h"
++#include "ext/json/php_json.h"
+ #include "zend_smart_str.h"
+ #include "../php_ds.h"
+ 
+@@ -315,4 +329,9 @@
+  */
+ bool ds_special_is_equal(zval *op1, zval *op2);
+ 
++/**
++ *
++ */
++void php_ds_resolve_symbols();
++
+ #endif

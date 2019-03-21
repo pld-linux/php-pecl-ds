@@ -12,6 +12,7 @@ License:	MIT
 Group:		Development/Languages/PHP
 Source0:	https://pecl.php.net/get/%{modname}-%{version}.tgz
 # Source0-md5:	be49f6819ff5049cd623a008243da999
+Patch0:		lazy-load-json.patch
 URL:		https://pecl.php.net/package/ds/
 BuildRequires:	%{php_name}-cli
 BuildRequires:	%{php_name}-devel >= 4:7.0
@@ -33,6 +34,7 @@ Data Structures for PHP 7.
 %prep
 %setup -qc
 mv %{modname}-%{version}/* .
+%patch0 -p1
 
 cat <<'EOF' > run-tests.sh
 #!/bin/sh
