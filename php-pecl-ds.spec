@@ -7,7 +7,7 @@
 Summary:	Data Structures
 Name:		%{php_name}-pecl-%{modname}
 Version:	1.2.9
-Release:	1
+Release:	2
 License:	MIT
 Group:		Development/Languages/PHP
 Source0:	https://pecl.php.net/get/%{modname}-%{version}.tgz
