@@ -7,7 +7,7 @@
 Summary:	Data Structures
 Name:		%{php_name}-pecl-%{modname}
 Version:	1.2.9
-Release:	2
+Release:	3
 License:	MIT
 Group:		Development/Languages/PHP
 Source0:	https://pecl.php.net/get/%{modname}-%{version}.tgz
@@ -73,7 +73,12 @@ install -d $RPM_BUILD_ROOT{%{php_sysconfdir}/conf.d,%{php_extensiondir}}
 	INSTALL_ROOT=$RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{php_sysconfdir}/conf.d
+%if "%php_major_version.%php_minor_version" >= "7.4"
+# order after ext-json
+cat <<'EOF' > $RPM_BUILD_ROOT%{php_sysconfdir}/conf.d/01_%{modname}.ini
+%else
 cat <<'EOF' > $RPM_BUILD_ROOT%{php_sysconfdir}/conf.d/json_%{modname}.ini
+%endif
 ; Enable %{modname} extension module
 extension=%{modname}.so
 EOF
