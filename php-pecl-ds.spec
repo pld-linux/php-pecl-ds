@@ -6,12 +6,12 @@
 %define		modname	ds
 Summary:	Data Structures
 Name:		%{php_name}-pecl-%{modname}
-Version:	1.3.0
+Version:	1.4.0
 Release:	1
 License:	MIT
 Group:		Development/Languages/PHP
 Source0:	https://pecl.php.net/get/%{modname}-%{version}.tgz
-# Source0-md5:	3c1635a4a7c00c2fc48ce0c5414c59c8
+# Source0-md5:	d7e64fbb53b567908d63155ec2a8f548
 URL:		https://pecl.php.net/package/ds/
 BuildRequires:	%{php_name}-cli
 BuildRequires:	%{php_name}-devel >= 4:7.0
