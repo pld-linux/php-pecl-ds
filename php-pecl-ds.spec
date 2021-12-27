@@ -50,7 +50,7 @@ phpize
 %{__make}
 
 # simple module load test
-%{__php} -n -q \
+%{__php} -n -q -d display_errors=off \
 	-d extension_dir=modules \
 	-d extension=%{php_extensiondir}/pcre.so \
 	-d extension=%{php_extensiondir}/spl.so \
