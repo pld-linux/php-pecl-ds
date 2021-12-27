@@ -39,11 +39,14 @@ cat <<'EOF' > run-tests.sh
 export NO_INTERACTION=1 REPORT_EXIT_STATUS=1 MALLOC_CHECK_=2
 exec %{__make} test \
 	PHP_EXECUTABLE=%{__php} \
-%if "%php_major_version.%php_minor_version" >= "7.4"
-	PHP_TEST_SHARED_SYSTEM_EXTENSIONS="json" \
-%else
-	PHP_TEST_SHARED_SYSTEM_EXTENSIONS="pcre spl json" \
+	PHP_TEST_SHARED_SYSTEM_EXTENSIONS="\
+%if "%php_major_version.%php_minor_version" < "8.0"
+	json \
 %endif
+%if "%php_major_version.%php_minor_version" < "7.4"
+	pcre spl \
+%endif
+	" \
 	RUN_TESTS_SETTINGS="-q $*"
 EOF
 chmod +x run-tests.sh
@@ -60,7 +63,9 @@ phpize
 	-d extension=%{php_extensiondir}/pcre.so \
 	-d extension=%{php_extensiondir}/spl.so \
 %endif
+%if "%php_major_version.%php_minor_version" < "8.0"
 	-d extension=%{php_extensiondir}/json.so \
+%endif
 	-d extension=%{modname}.so \
 	-m > modules.log
 grep %{modname} modules.log
