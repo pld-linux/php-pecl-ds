@@ -6,29 +6,22 @@
 %define		modname	ds
 Summary:	Data Structures
 Name:		%{php_name}-pecl-%{modname}
-Version:	1.4.0
+Version:	1.6.0
 Release:	1
 License:	MIT
 Group:		Development/Languages/PHP
 Source0:	https://pecl.php.net/get/%{modname}-%{version}.tgz
-# Source0-md5:	d7e64fbb53b567908d63155ec2a8f548
+# Source0-md5:	c743b75f58bedfa2ab7fb3853b7b629b
 URL:		https://pecl.php.net/package/ds/
 BuildRequires:	%{php_name}-cli
-BuildRequires:	%{php_name}-devel >= 4:7.0
-BuildRequires:	%{php_name}-json
-BuildRequires:	%{php_name}-pcre
-BuildRequires:	%{php_name}-spl
+BuildRequires:	%{php_name}-devel >= 4:7.4.0
 BuildRequires:	rpmbuild(macros) >= 1.666
-%if %{with tests}
-%endif
 %{?requires_php_extension}
-Requires:	%{php_name}-json
-Requires:	%{php_name}-spl
 Provides:	php(%{modname}) = %{version}
 BuildRoot:	%{tmpdir}/%{name}-%{version}-root-%(id -u -n)
 
 %description
-Data Structures for PHP 7.
+Data Structures for PHP.
 
 %prep
 %setup -qc
@@ -43,9 +36,6 @@ exec %{__make} test \
 %if "%php_major_version.%php_minor_version" < "8.0"
 	json \
 %endif
-%if "%php_major_version.%php_minor_version" < "7.4"
-	pcre spl \
-%endif
 	" \
 	RUN_TESTS_SETTINGS="-q $*"
 EOF
@@ -59,10 +49,6 @@ phpize
 # simple module load test
 %{__php} -n -q -d display_errors=off \
 	-d extension_dir=modules \
-%if "%php_major_version.%php_minor_version" < "7.4"
-	-d extension=%{php_extensiondir}/pcre.so \
-	-d extension=%{php_extensiondir}/spl.so \
-%endif
 %if "%php_major_version.%php_minor_version" < "8.0"
 	-d extension=%{php_extensiondir}/json.so \
 %endif
@@ -84,12 +70,8 @@ install -d $RPM_BUILD_ROOT{%{php_sysconfdir}/conf.d,%{php_extensiondir}}
 	INSTALL_ROOT=$RPM_BUILD_ROOT
 
 install -d $RPM_BUILD_ROOT%{php_sysconfdir}/conf.d
-%if "%php_major_version.%php_minor_version" >= "7.4"
 # order after ext-json
 cat <<'EOF' > $RPM_BUILD_ROOT%{php_sysconfdir}/conf.d/01_%{modname}.ini
-%else
-cat <<'EOF' > $RPM_BUILD_ROOT%{php_sysconfdir}/conf.d/json_%{modname}.ini
-%endif
 ; Enable %{modname} extension module
 extension=%{modname}.so
 EOF
