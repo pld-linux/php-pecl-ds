@@ -7,7 +7,7 @@
 Summary:	Data Structures
 Name:		%{php_name}-pecl-%{modname}
 Version:	1.6.0
-Release:	1
+Release:	2
 License:	MIT
 Group:		Development/Languages/PHP
 Source0:	https://pecl.php.net/get/%{modname}-%{version}.tgz
@@ -15,6 +15,10 @@ Source0:	https://pecl.php.net/get/%{modname}-%{version}.tgz
 URL:		https://pecl.php.net/package/ds/
 BuildRequires:	%{php_name}-cli
 BuildRequires:	%{php_name}-devel >= 4:7.4.0
+# json is built-in since PHP 8.0; needed for module load test in %build
+%if "%php_major_version.%php_minor_version" < "8.0"
+BuildRequires:	%{php_name}-json
+%endif
 BuildRequires:	rpmbuild(macros) >= 1.666
 %{?requires_php_extension}
 Provides:	php(%{modname}) = %{version}
